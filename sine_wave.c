@@ -77,31 +77,38 @@ int main() {
     float frequency = 5.0f;       // 5 Hz
     float amplitude = 2.5f;       // Peak amplitude
     float sampling_rate = 100.0f; // 100 samples per second
-    int num_samples = 50;         // Generate 0.5 seconds of data
+    int num_samples = 100;        // Generate 1.0 seconds of data
 
-    float *sine_wave = generate_sine_wave(frequency, amplitude, sampling_rate, num_samples);
+    float *clean_wave = generate_sine_wave(frequency, amplitude, sampling_rate, num_samples);
+    float *less_noisy_wave = generate_sine_wave(frequency, amplitude, sampling_rate, num_samples);
+    float *noisy_wave = generate_sine_wave(frequency, amplitude, sampling_rate, num_samples);
 
-    if (sine_wave != NULL) {
-        printf("Generated Sine Wave (%d samples):\n", num_samples);
-        for (int i = 0; i < 10; i++) { // Print only first 10 for brevity
-            printf("Sample %2d: %8.4f\n", i, sine_wave[i]);
-        }
-        
-        // --- Add Gaussian Noise ---
-        float noise_variance = 0.5f; // Example variance
-        
+    if (clean_wave != NULL && less_noisy_wave != NULL && noisy_wave != NULL) {
         // Seed the random number generator
         srand((unsigned int)time(NULL)); 
         
-        add_gaussian_noise(sine_wave, num_samples, noise_variance);
+        // Add varying levels of noise
+        add_gaussian_noise(less_noisy_wave, num_samples, 0.1f);
+        add_gaussian_noise(noisy_wave, num_samples, 1.0f);
         
-        printf("\nSine Wave with Gaussian Noise (Variance %.2f):\n", noise_variance);
-        for (int i = 0; i < 10; i++) { // Print only first 10 for brevity
-            printf("Sample %2d: %8.4f\n", i, sine_wave[i]);
+        // Write to CSV file
+        FILE *fp = fopen("waveforms.csv", "w");
+        if (fp != NULL) {
+            fprintf(fp, "Time,Clean,LessNoisy,Noisy\n");
+            for (int i = 0; i < num_samples; i++) {
+                float t = (float)i / sampling_rate;
+                fprintf(fp, "%f,%f,%f,%f\n", t, clean_wave[i], less_noisy_wave[i], noisy_wave[i]);
+            }
+            fclose(fp);
+            printf("Waveforms successfully written to waveforms.csv\n");
+        } else {
+            fprintf(stderr, "Failed to open waveforms.csv for writing.\n");
         }
 
         // Always free dynamically allocated memory once done
-        free(sine_wave);
+        free(clean_wave);
+        free(less_noisy_wave);
+        free(noisy_wave);
     }
 
     return 0;
