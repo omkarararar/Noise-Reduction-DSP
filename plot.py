@@ -21,6 +21,7 @@ with open(csv_file, 'r') as f:
         noisy.append(float(row['Noisy']))
 
 plt.figure(figsize=(10, 8))
+plt.suptitle('Sine Wave Generation & Noise Analysis', fontsize=16)
 
 # Plot clean wave
 plt.subplot(3, 1, 1)

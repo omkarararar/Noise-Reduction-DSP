@@ -73,11 +73,23 @@ void add_gaussian_noise(float* array, int num_samples, float variance) {
     }
 }
 
-int main() {
+int main(int argc, char *argv[]) {
     float frequency = 5.0f;       // 5 Hz
     float amplitude = 2.5f;       // Peak amplitude
     float sampling_rate = 100.0f; // 100 samples per second
     int num_samples = 100;        // Generate 1.0 seconds of data
+
+    // Parse command-line arguments if provided
+    if (argc >= 2) frequency = (float)atof(argv[1]);
+    if (argc >= 3) amplitude = (float)atof(argv[2]);
+    if (argc >= 4) sampling_rate = (float)atof(argv[3]);
+    if (argc >= 5) num_samples = atoi(argv[4]);
+    
+    printf("Parameters:\n");
+    printf("  Frequency     : %.2f Hz\n", frequency);
+    printf("  Amplitude     : %.2f\n", amplitude);
+    printf("  Sampling Rate : %.2f Hz\n", sampling_rate);
+    printf("  Total Samples : %d\n\n", num_samples);
 
     float *clean_wave = generate_sine_wave(frequency, amplitude, sampling_rate, num_samples);
     float *less_noisy_wave = generate_sine_wave(frequency, amplitude, sampling_rate, num_samples);
